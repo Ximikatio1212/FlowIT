@@ -1,0 +1,23 @@
+[build]
+  command = "pnpm --filter @workspace/flowit-website run build"
+  publish = "artifacts/flowit-website/dist/public"
+  functions = "artifacts/flowit-website/netlify/functions"
+
+[build.environment]
+  BASE_PATH = "/"
+  PORT = "8888"
+
+[functions]
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/api/leads"
+  to = "/.netlify/functions/leads"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/healthz"
+  to = "/.netlify/functions/health"
+  status = 200
+  force = true
