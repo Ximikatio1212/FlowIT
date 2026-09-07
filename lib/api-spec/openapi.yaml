@@ -1,0 +1,145 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /leads:
+    post:
+      operationId: createLead
+      tags: [leads]
+      summary: Create a FlowIT lead
+      description: Validates and stores a new website inquiry.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LeadInput"
+      responses:
+        "201":
+          description: Lead created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lead"
+        "400":
+          description: Invalid lead data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Lead could not be saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    LeadInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        company:
+          type: ["string", "null"]
+          maxLength: 160
+        business_direction:
+          type: ["string", "null"]
+          maxLength: 160
+        service:
+          type: ["string", "null"]
+          maxLength: 80
+        phone:
+          type: string
+          minLength: 3
+          maxLength: 40
+        task:
+          type: string
+          minLength: 1
+          maxLength: 4000
+        budget:
+          type: ["string", "null"]
+          maxLength: 80
+        honeypot:
+          type: ["string", "null"]
+          maxLength: 200
+      required:
+        - name
+        - phone
+        - task
+    Lead:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        company:
+          type: ["string", "null"]
+        business_direction:
+          type: ["string", "null"]
+        service:
+          type: ["string", "null"]
+        phone:
+          type: string
+        task:
+          type: string
+        budget:
+          type: ["string", "null"]
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - phone
+        - task
+        - status
+        - created_at
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
